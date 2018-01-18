@@ -20,7 +20,57 @@ public class VoronoiTest {
         for (int i = 0; i < points.length; i++)
             points[i] = GeoUtils.randomPoint(-1000, -1000, 2000, 2000);
 
-        final VoronoiResults results = Voronoi.findAll(points, new RectD(-1000, -1000, 2000, 2000));
+        testVoronoiResults(Voronoi.findAll(points, new RectD(-1000, -1000, 2000, 2000)));
+    }
+
+    @Test
+    public void testVoronoiWithRegionTouchingThreeCorners() {
+        RectD clip = new RectD(-10, -10, 10, 10);
+
+        final PointD[] points1 = new PointD[]{
+                new PointD(-1, -1), // key region
+                new PointD(-9, -7),
+                new PointD(-8, -9),
+        };
+
+        final PointD[] points2 = new PointD[]{
+                new PointD(1, -1), // key region
+                new PointD(9, -7),
+                new PointD(8, -9),
+        };
+
+        final PointD[] points3 = new PointD[]{
+                new PointD(-1, 1), // key region
+                new PointD(-9, 7),
+                new PointD(-8, 9),
+        };
+
+        final PointD[] points4 = new PointD[]{
+                new PointD(1, 1), // key region
+                new PointD(9, 7),
+                new PointD(8, 9),
+        };
+
+        testVoronoiResults(Voronoi.findAll(points1, clip));
+        testVoronoiResults(Voronoi.findAll(points2, clip));
+        testVoronoiResults(Voronoi.findAll(points3, clip));
+        testVoronoiResults(Voronoi.findAll(points4, clip));
+    }
+
+    @Test
+    public void testVoronoiWithRegionTouchingTwoOppositeSides() {
+        RectD clip = new RectD(-10, -10, 10, 10);
+
+        final PointD[] points = new PointD[]{
+                new PointD(-5, 0),
+                new PointD(0, 0), // key region
+                new PointD(5, 0),
+        };
+
+        testVoronoiResults(Voronoi.findAll(points, clip));
+    }
+
+    private void testVoronoiResults(VoronoiResults results) {
         final Subdivision delaunay = results.toDelaunaySubdivision(true);
         delaunay.validate();
 
